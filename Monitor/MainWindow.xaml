@@ -2,11 +2,104 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"     
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"        
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:Monitor"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <local:IpToString x:Key="IpToStringConverter"/>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="0" Content="Start" Click="Button_Click"/>
+        <ListView Grid.Row="1" x:Name="EntriesList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding Path=SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=High}"/>
+                    <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding Path=DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=High}" />
+                    <!--<GridViewColumn Width="140" Header="ContrySource" DisplayMemberBinding="{Binding Path=ContrySource, diag:PresentationTraceSources.TraceLevel=High}" />
+                                            <GridViewColumn Width="140" Header="ContryDestination" DisplayMemberBinding="{Binding Path=ContryDestination, diag:PresentationTraceSources.TraceLevel=High}" />-->
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
+    <!--<Grid>
+            <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            -->
+    <!--<Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
+
+            </Grid.ColumnDefinitions>
+            -->
+    <!--<Label Grid.Column="0" x:Name="SourceAddress" Content="{Binding Path=CurrentPacket.SourceAddress , Converter={StaticResource IpToStringConverter}}"/>
+            <TextBox Grid.Column="1" x:Name="DestinationAddress" Text="{Binding CurrentPacket.DestinationAddress, Converter={StaticResource IpToStringConverter}}"/>-->
+    <!--
+            <Label Grid.Column="2" x:Name="ContryofSource" Content="{Binding Path=CurrentPacket.ContrySource, diag:PresentationTraceSources.TraceLevel=High}"/>
+            <TextBox Grid.Column="3" x:Name="ContryofDestination" Text="{Binding Path=CurrentPacket.ContryDestination, diag:PresentationTraceSources.TraceLevel=High}"/>-->
+    <!--
+        </Grid>
+        <xcad:DockingManager Grid.Row="1" x:Name="dockingManager">
+            <xcad:LayoutRoot>
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutDocumentPaneGroup>
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="Sniffer">
+                                <ListView x:Name="EntriesList"  ItemsSource="{Binding ListOfEntriesRef, diag:PresentationTraceSources.TraceLevel=High}">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding Path=SourceAddress, Converter={StaticResource IpToStringConverter}, diag:PresentationTraceSources.TraceLevel=High}"/>
+                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding Path=DestinationAddress, Converter={StaticResource IpToStringConverter}, diag:PresentationTraceSources.TraceLevel=High}" />
+                                            -->
+    <!--<GridViewColumn Width="140" Header="ContrySource" DisplayMemberBinding="{Binding Path=ContrySource, diag:PresentationTraceSources.TraceLevel=High}" />
+                                            <GridViewColumn Width="140" Header="ContryDestination" DisplayMemberBinding="{Binding Path=ContryDestination, diag:PresentationTraceSources.TraceLevel=High}" />-->
+    <!--
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                        -->
+    <!--<xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="Localisation">
+                                <ListView x:Name="EntriesList2"  ItemsSource="{Binding Source={StaticResource ListOfEntriesRef}}" IsSynchronizedWithCurrentItem="True">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding Path=SourceAddress, Converter={StaticResource IpToStringConverter}}"/>
+                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding Path=DestinationAddress, Converter={StaticResource IpToStringConverter}}" />
+                                            -->
+    <!--<GridViewColumn Width="140" Header="ContrySource" DisplayMemberBinding="{Binding Path=ContrySource}" />
+                                            <GridViewColumn Width="140" Header="ContryDestination" DisplayMemberBinding="{Binding Path=ContryDestination}" />-->
+    <!--
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>-->
+    <!--
+                    </xcad:LayoutDocumentPaneGroup>
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="150" Orientation="Vertical">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable Title="Tool 1">
+                                <TextBox/>
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+    </Grid>-->
 </Window>
