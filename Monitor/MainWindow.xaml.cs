@@ -20,6 +20,8 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Net;
 using System.Collections.Specialized;
+using System.Net.NetworkInformation;
+using System.Diagnostics;
 
 namespace Monitor
 {
@@ -28,8 +30,8 @@ namespace Monitor
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private ObservableCollection<Packet> _ListOfEntries;
-        public ObservableCollection<Packet> ListOfEntries
+        private ObservableCollection<Entry> _ListOfEntries;
+        public ObservableCollection<Entry> ListOfEntries
         {
             get { return _ListOfEntries; }
             set
@@ -43,7 +45,7 @@ namespace Monitor
         private static readonly ILog log = LogManager.GetLogger(typeof(MainWindow));
 
         private delegate void UpdatePacketList(Packet p);
-        int m_PacketsSize;
+        
 
         public MainWindow()
         {
@@ -71,11 +73,20 @@ namespace Monitor
         {
             try
             {
-                Application.Current.Dispatcher.Invoke(new Action(() => { _ListOfEntries.Add(p); }));
 
-                
-                m_PacketsSize += p.TotalLength;
-            }
+                if(ListOfEntries.Any(x => x.SourceAddress.ToString() == p.SourceAddress.ToString() && x.DestinationAddress.ToString() == p.DestinationAddress.ToString()))
+                {
+                    var entry = ListOfEntries.First(x => x.SourceAddress.ToString() == p.SourceAddress.ToString() && x.DestinationAddress.ToString() == p.DestinationAddress.ToString());
+                    entry.NbofPackets++;
+                    Application.Current.Dispatcher.Invoke(new Action(() => { this.EntriesList.ItemsSource = _ListOfEntries; }));
+
+                }
+                else
+                {
+                    var newEntry = new Entry(p);
+                    Application.Current.Dispatcher.Invoke(new Action(() => { _ListOfEntries.Add(newEntry); }));
+                }
+                            }
             catch (Exception e)
             {
                 throw e;
@@ -104,7 +115,7 @@ namespace Monitor
         {
             try
             {
-                _ListOfEntries = new ObservableCollection<Packet>();
+                _ListOfEntries = new ObservableCollection<Entry>();
                 _ListOfEntries.CollectionChanged += _ListOfEntries_CollectionChanged;
                 var theMonitor = new Sniffer();
                 theMonitor.NewPacket += OnNewPacket;
@@ -114,6 +125,24 @@ namespace Monitor
                 log.Error(e);
             }
         }
+
+        private void ListViewItem_MouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is ListBoxItem)
+            {
+                if ((sender as ListBoxItem).Content is Entry)
+                {
+                    Entry entry = ((ListBoxItem)sender).Content as Entry ;
+                    string result = Tools.Traceroute(entry.SourceAddress.ToString());
+                    Console.WriteLine(result);
+                }
+            }
+        }
+        
+
+
+
+
     }
 
     public class IpToString : IValueConverter

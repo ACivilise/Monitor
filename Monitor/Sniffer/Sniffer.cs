@@ -25,7 +25,7 @@ namespace Monitor
 
         public Sniffer()
         {
-            this.NewPacket += this.OnNewPacket;
+            //this.NewPacket += this.OnNewPacket;
             Sniffer.Start(this);
         }
 
@@ -140,29 +140,5 @@ namespace Monitor
 
         }
 
-        public static string GetUserCountryByIp(string ip)
-        {
-            var ipInfo = new IpInfo();
-            try
-            {
-                if (ip.Contains(':'))
-                {
-                    ip = ip.Split(':')[0];
-                }
-                using (var webClient = new WebClient())
-                {
-                    var info = webClient.DownloadString("http://ipinfo.io/" + ip);
-                    ipInfo = JsonConvert.DeserializeObject<IpInfo>(info);
-                    var myRI1 = new RegionInfo(ipInfo.Country);
-                    ipInfo.Country = myRI1.EnglishName;
-                }
-            }
-            catch (Exception e)
-            {
-                ipInfo.Country = null;
-            }
-
-            return ipInfo.Country;
-        }
     }
 }

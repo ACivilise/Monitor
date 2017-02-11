@@ -37,28 +37,6 @@ namespace Monitor
             }
         }
 
-        private string m_ContrySource;
-        public string ContrySource
-        {
-            get { return m_ContrySource; }
-            set
-            {
-                m_ContrySource = value;
-                InvokePropertyChanged(new PropertyChangedEventArgs("ContrySource"));
-            }
-        }
-
-        private string m_ContryDestination;
-        public string ContryDestination
-        {
-            get { return m_ContryDestination; }
-            set
-            {
-                m_ContryDestination = value;
-                InvokePropertyChanged(new PropertyChangedEventArgs("ContryDestination"));
-            }
-        }
-
         /// <summary>
         /// Initializes a new version of the Packet class.
         /// </summary>
@@ -123,11 +101,7 @@ namespace Monitor
                 throw e;
             }
         }
-
-        public Packet()
-        {
-        }
-
+        
         /// <summary>
         /// Gets the raw bytes of the IP packet.
         /// </summary>

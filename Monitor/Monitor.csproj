@@ -68,12 +68,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Entries.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Sniffer\Enums.cs" />
     <Compile Include="Sniffer\IpInfo.cs" />
     <Compile Include="Sniffer\Packet.cs" />
     <Compile Include="Sniffer\Sniffer.cs" />
+    <Compile Include="Sniffer\Tools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
