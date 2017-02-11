@@ -8,6 +8,7 @@
         xmlns:s="clr-namespace:System;assembly=mscorlib"        
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:Monitor"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Window.Resources>
@@ -18,120 +19,73 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="0" x:Name="EntriesList">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}"/>
-                    <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
-                    <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
-                </GridView>
-            </ListView.View>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListViewItem">
-                                    <Border CornerRadius="2" SnapsToDevicePixels="True"
-                                    BorderThickness="{TemplateBinding     BorderThickness}" 
-                                    BorderBrush="{TemplateBinding BorderBrush}" 
-                                    Background="{TemplateBinding Background}">
-                                        <Border Name="InnerBorder" CornerRadius="1"   BorderThickness="1">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition MaxHeight="11" />
-                                                    <RowDefinition />
-                                                </Grid.RowDefinitions>
-                                                <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
-                                                <GridViewRowPresenter Grid.RowSpan="2" 
-                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                            </Grid>
-                                        </Border>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter Property="Background" Value="LightBlue"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListView.ItemContainerStyle>
-        </ListView>
-        <Button Grid.Row="1" Content="Start" Click="Button_Click"/>
-    </Grid>
-    <!--<Grid>
-            <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            -->
-    <!--<Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="30"/>
-                <ColumnDefinition Width="30"/>
-
-            </Grid.ColumnDefinitions>
-            -->
-    <!--<Label Grid.Column="0" x:Name="SourceAddress" Content="{Binding Path=CurrentPacket.SourceAddress , Converter={StaticResource IpToStringConverter}}"/>
-            <TextBox Grid.Column="1" x:Name="DestinationAddress" Text="{Binding CurrentPacket.DestinationAddress, Converter={StaticResource IpToStringConverter}}"/>-->
-    <!--
-            <Label Grid.Column="2" x:Name="ContryofSource" Content="{Binding Path=CurrentPacket.ContrySource, diag:PresentationTraceSources.TraceLevel=High}"/>
-            <TextBox Grid.Column="3" x:Name="ContryofDestination" Text="{Binding Path=CurrentPacket.ContryDestination, diag:PresentationTraceSources.TraceLevel=High}"/>-->
-    <!--
-        </Grid>
-        <xcad:DockingManager Grid.Row="1" x:Name="dockingManager">
+        <xcad:DockingManager Grid.Row="0" x:Name="dockingManager">
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="Sniffer">
-                                <ListView x:Name="EntriesList"  ItemsSource="{Binding ListOfEntriesRef, diag:PresentationTraceSources.TraceLevel=High}">
+                                <ListView x:Name="EntriesList">
                                     <ListView.View>
                                         <GridView>
-                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding Path=SourceAddress, Converter={StaticResource IpToStringConverter}, diag:PresentationTraceSources.TraceLevel=High}"/>
-                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding Path=DestinationAddress, Converter={StaticResource IpToStringConverter}, diag:PresentationTraceSources.TraceLevel=High}" />
-                                            -->
-    <!--<GridViewColumn Width="140" Header="ContrySource" DisplayMemberBinding="{Binding Path=ContrySource, diag:PresentationTraceSources.TraceLevel=High}" />
-                                            <GridViewColumn Width="140" Header="ContryDestination" DisplayMemberBinding="{Binding Path=ContryDestination, diag:PresentationTraceSources.TraceLevel=High}" />-->
-    <!--
+                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}"/>
+                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
+                                            <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
                                         </GridView>
                                     </ListView.View>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListViewItem">
+                                                        <Border CornerRadius="2" SnapsToDevicePixels="True"
+                                    BorderThickness="{TemplateBinding     BorderThickness}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    Background="{TemplateBinding Background}">
+                                                            <Border Name="InnerBorder" CornerRadius="1"   BorderThickness="1">
+                                                                <Grid>
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition MaxHeight="11" />
+                                                                        <RowDefinition />
+                                                                    </Grid.RowDefinitions>
+                                                                    <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                                                    <GridViewRowPresenter Grid.RowSpan="2" 
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                                </Grid>
+                                                            </Border>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsSelected" Value="True">
+                                                                <Setter Property="Background" Value="LightBlue"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                 </ListView>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
-                        -->
-    <!--<xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument Title="Localisation">
-                                <ListView x:Name="EntriesList2"  ItemsSource="{Binding Source={StaticResource ListOfEntriesRef}}" IsSynchronizedWithCurrentItem="True">
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding Path=SourceAddress, Converter={StaticResource IpToStringConverter}}"/>
-                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding Path=DestinationAddress, Converter={StaticResource IpToStringConverter}}" />
-                                            -->
-    <!--<GridViewColumn Width="140" Header="ContrySource" DisplayMemberBinding="{Binding Path=ContrySource}" />
-                                            <GridViewColumn Width="140" Header="ContryDestination" DisplayMemberBinding="{Binding Path=ContryDestination}" />-->
-    <!--
-                                        </GridView>
-                                    </ListView.View>
-                                </ListView>
-                            </xcad:LayoutDocument>
-                        </xcad:LayoutDocumentPane>-->
-    <!--
                     </xcad:LayoutDocumentPaneGroup>
-                    <xcad:LayoutAnchorablePaneGroup DockWidth="150" Orientation="Vertical">
-                        <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable Title="Tool 1">
-                                <TextBox/>
-                            </xcad:LayoutAnchorable>
-                        </xcad:LayoutAnchorablePane>
-                    </xcad:LayoutAnchorablePaneGroup>
+                    <xcad:LayoutDocumentPaneGroup>
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument Title="WebBrowser">
+                                <cefSharp:ChromiumWebBrowser x:Name="browser"
+                                  Opacity="{Binding ElementName=opacitySlider, Path=Value}"
+                                  Address="www.googlemaps.fr"
+                                  Title="{Binding Title, Mode=OneWayToSource}"
+                                  AllowDrop="True"
+                                  WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}"
+                                  RenderOptions.BitmapScalingMode="{Binding ElementName=scalingModeComboBox, Path=SelectedItem}"/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup>
                 </xcad:LayoutPanel>
             </xcad:LayoutRoot>
         </xcad:DockingManager>
-    </Grid>-->
+        <Button Grid.Row="1" Content="Start" Click="Button_Click"/>
+    </Grid>
 </Window>
