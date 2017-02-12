@@ -8,84 +8,54 @@
         xmlns:s="clr-namespace:System;assembly=mscorlib"        
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:Monitor"
+        xmlns:view="clr-namespace:Monitor.View"
         xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Window.Resources>
-        <local:IpToString x:Key="IpToStringConverter"/>
-    </Window.Resources>
+        Title="MainWindow" Height="350" Width="525"
+        DataContext="{Binding Main, Source={StaticResource Locator}}"
+        >
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
-        </Grid.RowDefinitions>
-        <xcad:DockingManager Grid.Row="0" x:Name="dockingManager">
+        <xcad:DockingManager x:Name="dockingManager">
             <xcad:LayoutRoot>
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="Sniffer">
-                                <ListView x:Name="EntriesList">
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}"/>
-                                            <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
-                                            <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />
-                                        </GridView>
-                                    </ListView.View>
-                                    <ListView.ItemContainerStyle>
-                                        <Style TargetType="{x:Type ListViewItem}">
-                                            <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
-                                            <Setter Property="Template">
-                                                <Setter.Value>
-                                                    <ControlTemplate TargetType="ListViewItem">
-                                                        <Border CornerRadius="2" SnapsToDevicePixels="True"
-                                    BorderThickness="{TemplateBinding     BorderThickness}" 
-                                    BorderBrush="{TemplateBinding BorderBrush}" 
-                                    Background="{TemplateBinding Background}">
-                                                            <Border Name="InnerBorder" CornerRadius="1"   BorderThickness="1">
-                                                                <Grid>
-                                                                    <Grid.RowDefinitions>
-                                                                        <RowDefinition MaxHeight="11" />
-                                                                        <RowDefinition />
-                                                                    </Grid.RowDefinitions>
-                                                                    <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
-                                                                    <GridViewRowPresenter Grid.RowSpan="2" 
-                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                                                                </Grid>
-                                                            </Border>
-                                                        </Border>
-                                                        <ControlTemplate.Triggers>
-                                                            <Trigger Property="IsSelected" Value="True">
-                                                                <Setter Property="Background" Value="LightBlue"/>
-                                                            </Trigger>
-                                                        </ControlTemplate.Triggers>
-                                                    </ControlTemplate>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </Style>
-                                    </ListView.ItemContainerStyle>
-                                </ListView>
+                                <view:EntriesListView/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="WebBrowser">
-                                <cefSharp:ChromiumWebBrowser x:Name="browser"
-                                  Opacity="{Binding ElementName=opacitySlider, Path=Value}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition Height="30*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="30"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" x:Name="Adress">
+                                            <TextBox.InputBindings>
+                                                <KeyBinding Command="{Binding Path=ChangeAdressCommand}" Key="Return" />
+                                            </TextBox.InputBindings>
+                                        </TextBox>
+                                        <Button Grid.Column="1" Click="Button_Click_1"/>
+                                     </Grid>
+                                 <cefSharp:ChromiumWebBrowser x:Name="browser" Grid.Row="1"
                                   Address="www.googlemaps.fr"
-                                  Title="{Binding Title, Mode=OneWayToSource}"
+                                  Title="Titre"
                                   AllowDrop="True"
-                                  WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}"
-                                  RenderOptions.BitmapScalingMode="{Binding ElementName=scalingModeComboBox, Path=SelectedItem}"/>
+                                  WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}"/>
+                                </Grid>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>
                 </xcad:LayoutPanel>
             </xcad:LayoutRoot>
         </xcad:DockingManager>
-        <Button Grid.Row="1" Content="Start" Click="Button_Click"/>
     </Grid>
 </Window>

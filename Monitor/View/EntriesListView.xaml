@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="Monitor.View.EntriesListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Monitor.View"
+             xmlns:main="clr-namespace:Monitor"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             DataContext="{Binding EntriesList, Source={StaticResource Locator}}">
+    <UserControl.Resources>
+        <main:IpToStringConverter x:Key="IpToStringConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <ListView x:Name="EntriesList" Grid.Row="0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}"/>
+                    <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}" />
+                    <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay}" />
+                    <!--<GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />-->
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border CornerRadius="2" SnapsToDevicePixels="True"
+                                    BorderThickness="{TemplateBinding     BorderThickness}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    Background="{TemplateBinding Background}">
+                                    <Border Name="InnerBorder" CornerRadius="1"   BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition MaxHeight="11" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Rectangle Name="UpperHighlight" Visibility="Collapsed" Fill="#75FFFFFF" />
+                                            <GridViewRowPresenter Grid.RowSpan="2" 
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        </Grid>
+                                    </Border>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="LightBlue"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <Button Grid.Row="1" Content="Start" Click="Button_Click"/>
+        
+    </Grid>
+</UserControl>
