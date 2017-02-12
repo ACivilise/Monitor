@@ -13,6 +13,7 @@ using System.Collections.Specialized;
 using GalaSoft.MvvmLight.Command;
 using Monitor.ViewModel;
 using Microsoft.Practices.ServiceLocation;
+using log4net.Config;
 
 namespace Monitor
 {
@@ -21,9 +22,8 @@ namespace Monitor
     /// </summary>
     public partial class MainWindow : Window
     {
-
-        // On définit une variable logger static qui référence l'instance du logger nommé Program
         private static readonly ILog log = LogManager.GetLogger(typeof(MainWindow));
+
 
         private MainViewModel Model;
 
@@ -31,6 +31,12 @@ namespace Monitor
         {
             try
             {
+                // BasicConfigurator replaced with XmlConfigurator.
+                XmlConfigurator.Configure(new System.IO.FileInfo("log4net.xml"));
+
+                // Set up a simple configuration that logs on the console.
+                BasicConfigurator.Configure();
+
                 InitializeComponent();
                 Closing += (s, e) => ViewModelLocator.Cleanup();
             }
@@ -39,11 +45,5 @@ namespace Monitor
                 log.Error(e);
             }
         }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            browser.Address = Adress.Text;
-        }
-
     }    
 }

@@ -44,6 +44,7 @@ namespace Monitor.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<EntriesListViewModel>();
+            SimpleIoc.Default.Register<BrowserViewModel>();
         }
 
         public MainViewModel Main
@@ -59,6 +60,14 @@ namespace Monitor.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<EntriesListViewModel>();
+            }
+        }
+
+        public BrowserViewModel Browser
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<BrowserViewModel>();
             }
         }
 

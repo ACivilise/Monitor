@@ -24,9 +24,7 @@ namespace Monitor.View
     /// Interaction logic for EntriesListView.xaml
     /// </summary>
     public partial class EntriesListView : UserControl
-    {
-
-        // On définit une variable logger static qui référence l'instance du logger nommé Program
+    {        
         private static readonly ILog log = LogManager.GetLogger(typeof(EntriesListView));
 
         private EntriesListViewModel Model;
@@ -49,22 +47,42 @@ namespace Monitor.View
             }
         }
 
-        private void OnNewPacket(Sniffer pm, Packet p)
+        private void OnNewPacket(Sniffer pm, Entry newEntry)
         {
             try
             {
 
-                if (Model.ListOfEntries.Any(x => x.SourceAddress.ToString() == p.SourceAddress.ToString() && x.DestinationAddress.ToString() == p.DestinationAddress.ToString()))
+                if (Model.ListOfEntries.Any(x => x.SourceAddress.ToString() == newEntry.SourceAddress.ToString() && x.DestinationAddress.ToString() == newEntry.DestinationAddress.ToString()))
                 {
-                    var entry = Model.ListOfEntries.First(x => x.SourceAddress.ToString() == p.SourceAddress.ToString() && x.DestinationAddress.ToString() == p.DestinationAddress.ToString());
+                    var entry = Model.ListOfEntries.First(x => x.SourceAddress.ToString() == newEntry.SourceAddress.ToString() && x.DestinationAddress.ToString() == newEntry.DestinationAddress.ToString());
                     entry.NbofPackets++;
-                    Application.Current.Dispatcher.Invoke(new Action(() => { this.EntriesList.ItemsSource = Model.ListOfEntries; }));
+                    Application.Current.Dispatcher.Invoke(new Action(() => {
+                        try
+                        {
+                            this.EntriesList.ItemsSource = Model.ListOfEntries;
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw ex;
+                        }
+                    }));
 
                 }
                 else
                 {
-                    var newEntry = new Entry(p);
-                    Application.Current.Dispatcher.Invoke(new Action(() => { Model.ListOfEntries.Add(newEntry); }));
+
+                    Application.Current.Dispatcher.Invoke(new Action(() => {
+                        try
+                        {
+                            Model.ListOfEntries.Add(newEntry);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            throw ex;
+                        }
+                    }));
                 }
             }
             catch (Exception e)
@@ -97,7 +115,9 @@ namespace Monitor.View
                 {
                     Entry entry = ((ListBoxItem)sender).Content as Entry;
                     string result = Tools.Traceroute(entry.SourceAddress.ToString());
-                    Console.WriteLine(result);
+                    string result2 = Tools.Traceroute(entry.DestinationAddress.ToString());
+                    MessageBox.Show("Trace root result : " + result + " Trace root result2 : " + result2);
+
                 }
             }
         }

@@ -9,7 +9,6 @@
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:local="clr-namespace:Monitor"
         xmlns:view="clr-namespace:Monitor.View"
-        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525"
         DataContext="{Binding Main, Source={StaticResource Locator}}"
@@ -28,29 +27,7 @@
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="WebBrowser">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30"/>
-                                        <RowDefinition Height="30*"/>
-                                    </Grid.RowDefinitions>
-                                    <Grid Grid.Row="0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="30"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBox Grid.Column="0" x:Name="Adress">
-                                            <TextBox.InputBindings>
-                                                <KeyBinding Command="{Binding Path=ChangeAdressCommand}" Key="Return" />
-                                            </TextBox.InputBindings>
-                                        </TextBox>
-                                        <Button Grid.Column="1" Click="Button_Click_1"/>
-                                     </Grid>
-                                 <cefSharp:ChromiumWebBrowser x:Name="browser" Grid.Row="1"
-                                  Address="www.googlemaps.fr"
-                                  Title="Titre"
-                                  AllowDrop="True"
-                                  WebBrowser="{Binding WebBrowser, Mode=OneWayToSource}"/>
-                                </Grid>
+                                <view:BrowserView/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>

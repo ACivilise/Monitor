@@ -7,11 +7,15 @@ using System.Net;
 using System.Net.Sockets;
 using Newtonsoft.Json;
 using System.Globalization;
+using log4net;
 
 namespace Monitor
 {
     public class Sniffer
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Sniffer));
+
+
         /// <summary>
         /// Holds all the listeners for the NewPacket event.
         /// </summary>
@@ -19,9 +23,9 @@ namespace Monitor
         /// <summary>
         /// Represents the method that will handle the NewPacket event.
         /// </summary>
-        /// <param name="pm">The <see cref="Sniffer"/> that intercepted the <see cref="Packet"/>.</param>
-        /// <param name="p">The newly arrived <see cref="Packet"/>.</param>
-        public delegate void NewPacketEventHandler(Sniffer pm, Packet p);
+        /// <param name="pm">The <see cref="Sniffer"/> that intercepted the <see cref="Entry"/>.</param>
+        /// <param name="p">The newly arrived <see cref="Entry"/>.</param>
+        public delegate void NewPacketEventHandler(Sniffer pm, Entry p);
 
         public Sniffer()
         {
@@ -50,8 +54,8 @@ namespace Monitor
         /// <summary>
         /// Raises an event that indicates a new packet has arrived.
         /// </summary>
-        /// <param name="p">The arrived <see cref="Packet"/>.</param>
-        protected void OnNewPacket(Packet p)
+        /// <param name="p">The arrived <see cref="Entry"/>.</param>
+        protected void OnNewPacket(Entry p)
         {
             if (NewPacket != null)
                 NewPacket(this, p);
@@ -71,7 +75,7 @@ namespace Monitor
                     {
                         var packet = new byte[received];
                         Array.Copy(m_Buffer, 0, packet, 0, received);
-                        OnNewPacket(new Packet(packet));
+                        OnNewPacket(new Entry(packet));
                     }
                 }
                 sniffer.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(this.OnReceive), null);
@@ -123,7 +127,7 @@ namespace Monitor
             }
         }
 
-        private void OnNewPacket(Sniffer pm, Packet p)
+        private void OnNewPacket(Sniffer pm, Entry p)
         {
             StringBuilder sb = new StringBuilder("Entry : ");
             sb.Append("Time : ").Append(p.Time.ToString());

@@ -25,33 +25,14 @@ namespace Monitor.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(MainViewModel));
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
         public MainViewModel()
         {
-            CreateChangeAdressCommand();
         }
         
-        public ICommand ChangeAdressCommand
-        {
-            get;
-            internal set;
-        }
 
-        private static bool CanExecuteChangeAdressCommand()
-        {
-            return true;
-        }
-
-        private void CreateChangeAdressCommand()
-        {
-            ChangeAdressCommand = new RelayCommand(ChangeAdressExecute, CanExecuteChangeAdressCommand);
-        }
-
-        public static void ChangeAdressExecute()
-        {
-            MessageBox.Show("The New command was invoked");
-        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ namespace Monitor.ViewModel
 {
     public class EntriesListViewModel
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(EntriesListViewModel));
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -30,7 +32,7 @@ namespace Monitor.ViewModel
             }
         }
 
-        private delegate void UpdatePacketList(Packet p);
+        private delegate void UpdatePacketList(Entry p);
 
 
         #region Implementation of INotifyPropertyChanged

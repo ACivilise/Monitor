@@ -10,6 +10,7 @@
              DataContext="{Binding EntriesList, Source={StaticResource Locator}}">
     <UserControl.Resources>
         <main:IpToStringConverter x:Key="IpToStringConverter"/>
+        <main:ProtocolToStringConverter x:Key="ProtocolToStringConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -20,9 +21,13 @@
         <ListView x:Name="EntriesList" Grid.Row="0">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Width="140" Header="SourceURL"  DisplayMemberBinding="{Binding SourceURL, Mode=OneWay}" />
                     <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}"/>
+                    <GridViewColumn Width="140" Header="DestinationURL"  DisplayMemberBinding="{Binding DestinationURL, Mode=OneWay}" />
                     <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}" />
                     <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay}" />
+                    <GridViewColumn Width="140" Header="Protocol"  DisplayMemberBinding="{Binding Protocol, Converter={StaticResource ProtocolToStringConverter}, Mode=OneWay}" />
+
                     <!--<GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />-->
                 </GridView>
             </ListView.View>
