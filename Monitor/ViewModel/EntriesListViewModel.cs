@@ -13,6 +13,8 @@ namespace Monitor.ViewModel
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(EntriesListViewModel));
 
+        public Sniffer Sniffer;
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -38,6 +40,23 @@ namespace Monitor.ViewModel
         #region Implementation of INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public IpInfo Localize(Entry selectedEntry)
+        {
+            IpInfo ipInfo = null;
+                 
+            if (Sniffer.Local_IP.Equals(selectedEntry.SourceAddress))
+            {
+                ipInfo = Tools.GetUserCountryByIp(selectedEntry.DestinationAddress.ToString());
+            }
+            else if (Sniffer.Local_IP.Equals(selectedEntry.DestinationAddress))
+            {
+                ipInfo = Tools.GetUserCountryByIp(selectedEntry.SourceAddress.ToString());
+            }
+
+            return ipInfo;
+
+        }
 
         public void InvokePropertyChanged(PropertyChangedEventArgs e)
         {

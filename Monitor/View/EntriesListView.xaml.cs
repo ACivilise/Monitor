@@ -35,9 +35,7 @@ namespace Monitor.View
 
             Model = ServiceLocator.Current.GetInstance<EntriesListViewModel>();
         }
-
-
-
+        
         private void _ListOfEntries_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
@@ -56,6 +54,7 @@ namespace Monitor.View
                 {
                     var entry = Model.ListOfEntries.First(x => x.SourceAddress.ToString() == newEntry.SourceAddress.ToString() && x.DestinationAddress.ToString() == newEntry.DestinationAddress.ToString());
                     entry.NbofPackets++;
+                    entry.TotalExchanged = entry.TotalExchanged + (newEntry.LastPacketLenght / 1024f) / 1024f; ;
                     Application.Current.Dispatcher.Invoke(new Action(() => {
                         try
                         {
@@ -75,6 +74,7 @@ namespace Monitor.View
                     Application.Current.Dispatcher.Invoke(new Action(() => {
                         try
                         {
+                            newEntry.TotalExchanged = (newEntry.LastPacketLenght / 1024f) / 1024f;
                             Model.ListOfEntries.Add(newEntry);
                         }
                         catch (Exception ex)
@@ -98,8 +98,8 @@ namespace Monitor.View
             {
                 Model.ListOfEntries = new ObservableCollection<Entry>();
                 Model.ListOfEntries.CollectionChanged += _ListOfEntries_CollectionChanged;
-                var theMonitor = new Sniffer();
-                theMonitor.NewPacket += OnNewPacket;
+                Model.Sniffer = new Sniffer();
+                Model.Sniffer.NewPacket += OnNewPacket;
             }
             catch (Exception ex)
             {
@@ -122,5 +122,41 @@ namespace Monitor.View
             }
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem mi = sender as MenuItem;
+            if (mi != null && EntriesList.SelectedItem != null && EntriesList.SelectedItem is Entry)
+            {
+                Entry selectedEntry = EntriesList.SelectedItem as Entry;
+                if("Host Source" == mi.Header.ToString())
+                {
+                    Clipboard.SetText(selectedEntry.SourceURL);
+                }
+                else if ("IP Source" == mi.Header.ToString())
+                {
+                    Clipboard.SetText(selectedEntry.SourceAddress.ToString());
+                }
+                else if ("Host Destination" == mi.Header.ToString())
+                {
+                    Clipboard.SetText(selectedEntry.DestinationURL);
+                }
+                else if ("IP Destination" == mi.Header.ToString())
+                {
+                    Clipboard.SetText(selectedEntry.DestinationAddress.ToString());
+                }
+            }  
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (EntriesList.SelectedItem != null && EntriesList.SelectedItem is Entry)
+            {
+                Entry selectedEntry = EntriesList.SelectedItem as Entry;
+                IpInfo ipInfo = Model.Localize(selectedEntry);
+
+                MessageBox.Show("Country : " + ipInfo.Country + "\tCity : " + ipInfo.City);
+
+            }
+        }
     }
 }

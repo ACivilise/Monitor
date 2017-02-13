@@ -70,7 +70,7 @@ namespace Monitor
         }
 
 
-        public static string GetUserCountryByIp(string ip)
+        public static IpInfo GetUserCountryByIp(string ip)
         {
             var ipInfo = new IpInfo();
             try
@@ -92,7 +92,7 @@ namespace Monitor
                 ipInfo.Country = null;
             }
 
-            return ipInfo.Country;
+            return ipInfo;
         }
     }
 }

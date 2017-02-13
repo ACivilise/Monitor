@@ -21,16 +21,27 @@
         <ListView x:Name="EntriesList" Grid.Row="0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="140" Header="SourceURL"  DisplayMemberBinding="{Binding SourceURL, Mode=OneWay}" />
-                    <GridViewColumn Width="140" Header="SourceAddress" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}"/>
-                    <GridViewColumn Width="140" Header="DestinationURL"  DisplayMemberBinding="{Binding DestinationURL, Mode=OneWay}" />
-                    <GridViewColumn Width="140" Header="DestinationAddress"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}" />
-                    <GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay}" />
-                    <GridViewColumn Width="140" Header="Protocol"  DisplayMemberBinding="{Binding Protocol, Converter={StaticResource ProtocolToStringConverter}, Mode=OneWay}" />
-
+                    <GridViewColumn Width="50" Header="Protocol"  DisplayMemberBinding="{Binding Protocol, Converter={StaticResource ProtocolToStringConverter}, Mode=OneWay}" />
+                    <GridViewColumn Width="150" Header="Host Source"  DisplayMemberBinding="{Binding SourceURL, Mode=OneWay}"/>
+                    <GridViewColumn Width="90" Header="IP Source" DisplayMemberBinding="{Binding SourceAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}"/>
+                    <GridViewColumn Width="150" Header="Host Destination"  DisplayMemberBinding="{Binding DestinationURL, Mode=OneWay}" />
+                    <GridViewColumn Width="90" Header="IP Destination"  DisplayMemberBinding="{Binding DestinationAddress, Converter={StaticResource IpToStringConverter},Mode=OneWay}" />
+                    <GridViewColumn Width="70" Header="Mbytes Exchanged"  DisplayMemberBinding="{Binding TotalExchanged, Mode=OneWay}" />
+                    <GridViewColumn Width="40" Header="Nb of Packets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay}" />
                     <!--<GridViewColumn Width="140" Header="NbofPackets"  DisplayMemberBinding="{Binding NbofPackets, Mode=OneWay, diag:PresentationTraceSources.TraceLevel=Low}" />-->
                 </GridView>
             </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Copy...">
+                        <MenuItem Header="Host Source" Click="MenuItem_Click"/>
+                        <MenuItem Header="IP Source" Click="MenuItem_Click"/>
+                        <MenuItem Header="Host Destination" Click="MenuItem_Click"/>
+                        <MenuItem Header="IP Destination" Click="MenuItem_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Get location" Click="MenuItem_Click_1"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.ItemContainerStyle>
                 <Style TargetType="{x:Type ListViewItem}">
                     <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
@@ -67,6 +78,6 @@
         </ListView>
 
         <Button Grid.Row="1" Content="Start" Click="Button_Click"/>
-        
+
     </Grid>
 </UserControl>

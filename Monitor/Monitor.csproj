@@ -140,6 +140,7 @@
     <Compile Include="DataType\Enums.cs" />
     <Compile Include="DataType\IpInfo.cs" />
     <Compile Include="Model\Entry.cs" />
+    <Compile Include="Model\Header.cs" />
     <Compile Include="Model\Sniffer.cs" />
     <Compile Include="Tools.cs" />
     <Compile Include="ViewModel\BrowserViewModel.cs" />

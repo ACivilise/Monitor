@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.ComponentModel;
 using log4net;
+using Monitor.Model;
 
 namespace Monitor
 {
@@ -15,26 +16,124 @@ namespace Monitor
     /// </summary>
     public class Entry : INotifyPropertyChanged
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Entry));
+
+        /// <summary>
+        /// Initializes a new version of the Packet class.
+        /// </summary>
+        /// <param name="raw">The raw bytes of the IP packet.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="raw"/> is a null reference (<b>Nothing</b> in Visual Basic).</exception>
+        /// <exception cref="ArgumentException"><paramref name="raw"/> represents an invalid IP packet.</exception>
+        /// <remarks>The intercept time will be set to DateTime.Now.</remarks>
+        public Entry(byte[] raw, int received) : this(raw, DateTime.Now, received) { }
+        /// <summary>
+        /// Initializes a new version of the Packet class.
+        /// </summary>
+        /// <param name="raw">The raw bytes of the IP packet.</param>
+        /// <param name="time">The time when the IP packet was intercepted.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="raw"/> is a null reference (<b>Nothing</b> in Visual Basic).</exception>
+        /// <exception cref="ArgumentException"><paramref name="raw"/> represents an invalid IP packet.</exception>
+        public Entry(byte[] raw, DateTime time, int received)
+        {
+            try
+            {
+                if (raw == null)
+                    throw new ArgumentNullException();
+                if (raw.Length < 20)
+                    throw new ArgumentException(); // invalid IP packet
+                m_Raw = raw;
+
+                ParseData(raw, time, received);
+
+                //Gets the URL if it exists
+                IPHostEntry ipHostEntry = null;
+                try
+                {
+                    ipHostEntry = Dns.GetHostEntry(m_SourceAddress);
+                    m_SourceURL = ipHostEntry.HostName;
+                }
+                catch (Exception e)
+                {
+                    //log.Error(e);
+                    m_SourceURL = e.Message;
+                }
+                try
+                {
+                    ipHostEntry = Dns.GetHostEntry(m_DestinationAddress);
+                    m_DestinationURL = ipHostEntry.HostName;
+                }
+                catch (Exception e)
+                {
+                    //log.Error(e);
+                    m_DestinationURL = e.Message;
+
+                }
+                m_NbofPackets = 1;
+                
+            }
+            catch (Exception e)
+            {
+                log.Error(e);
+                throw e;
+            }
+        }
+
+        private void ParseData(byte[] byteData, DateTime time, int nReceived)
+        {
+            //Since all protocol packets are encapsulated in the IP datagram
+            //so we start by parsing the IP header and see what protocol data
+            //is being carried by it
+            Header ipHeader = new Header(byteData, nReceived);
+            m_Time = time;
+            m_Version = ipHeader.Version;
+            m_HeaderLength = ipHeader.HeaderLength;
+            if ((byteData[0] & 0x0F) < 5)
+                throw new ArgumentException(); // invalid header of packet
+            m_Precedence = (Precedence)((byteData[1] & 0xE0) >> 5);
+            m_Delay = (Delay)((byteData[1] & 0x10) >> 4);
+            m_Throughput = (Throughput)((byteData[1] & 0x8) >> 3);
+            m_Reliability = (Reliability)((byteData[1] & 0x4) >> 2);
+            m_LastPacketLenght = byteData[2] * 256 + byteData[3];
+            if (m_LastPacketLenght != byteData.Length)
+                throw new ArgumentException(); // invalid size of packet
+            m_Identification = ipHeader.Identification;
+            m_TimeToLive = ipHeader.TTL; 
+            m_Protocol = ipHeader.ProtocolType;
+
+            m_Checksum = ipHeader.Checksum;
+            m_SourceAddress = ipHeader.SourceAddress;
+            m_DestinationAddress = ipHeader.DestinationAddress;
+            if (m_Protocol == Protocol.Tcp || m_Protocol == Protocol.Udp)
+            {
+                m_SourcePort = byteData[(byteData[0] & 0x0F) * 4] * 256 + byteData[(byteData[0] & 0x0F) * 4 + 1];
+                m_DestinationPort = byteData[(byteData[0] & 0x0F) * 4 + 2] * 256 + byteData[(byteData[0] & 0x0F) * 4 + 3];
+            }
+            else
+            {
+                m_SourcePort = -1;
+                m_DestinationPort = -1;
+            }
+        }
+
         #region private variables
 
         private byte[] m_Raw;
         private DateTime m_Time;
-        private int m_Version;
-        private int m_HeaderLength;
+        private string m_Version;
+        private string m_HeaderLength;
         private Precedence m_Precedence;
         private Delay m_Delay;
         private Throughput m_Throughput;
         private Reliability m_Reliability;
-        private int m_TotalLength;
-        private int m_Identification;
-        private int m_TimeToLive;
-        private byte[] m_Checksum;
+        private int m_LastPacketLenght;
+        private string m_Identification;
+        private string m_TimeToLive;
+        private string m_Checksum;
         private int m_SourcePort;
         private int m_DestinationPort;
         #endregion
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(Entry));
-
+        # region properties
         private IPAddress m_SourceAddress;
         public IPAddress SourceAddress
         {
@@ -90,6 +189,17 @@ namespace Monitor
             }
         }
 
+        private float m_TotalExchanged;
+        public float TotalExchanged
+        {
+            get { return m_TotalExchanged; }
+            set
+            {
+                m_TotalExchanged = value;
+                InvokePropertyChanged(new PropertyChangedEventArgs("TotalExchanged"));
+            }
+        }
+
         private Protocol m_Protocol;
         public Protocol Protocol
         {
@@ -100,99 +210,8 @@ namespace Monitor
                 InvokePropertyChanged(new PropertyChangedEventArgs("Protocol"));
             }
         }
-
-        /// <summary>
-        /// Initializes a new version of the Packet class.
-        /// </summary>
-        /// <param name="raw">The raw bytes of the IP packet.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="raw"/> is a null reference (<b>Nothing</b> in Visual Basic).</exception>
-        /// <exception cref="ArgumentException"><paramref name="raw"/> represents an invalid IP packet.</exception>
-        /// <remarks>The intercept time will be set to DateTime.Now.</remarks>
-        public Entry(byte[] raw) : this(raw, DateTime.Now) { }
-        /// <summary>
-        /// Initializes a new version of the Packet class.
-        /// </summary>
-        /// <param name="raw">The raw bytes of the IP packet.</param>
-        /// <param name="time">The time when the IP packet was intercepted.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="raw"/> is a null reference (<b>Nothing</b> in Visual Basic).</exception>
-        /// <exception cref="ArgumentException"><paramref name="raw"/> represents an invalid IP packet.</exception>
-        public Entry(byte[] raw, DateTime time)
-        {
-            try
-            {
-                if (raw == null)
-                    throw new ArgumentNullException();
-                if (raw.Length < 20)
-                    throw new ArgumentException(); // invalid IP packet
-                m_Raw = raw;
-                m_Time = time;
-                m_Version = (raw[0] & 0xF0) >> 4;
-                m_HeaderLength = (raw[0] & 0x0F) * 4 /* size of(int) */;
-                if ((raw[0] & 0x0F) < 5)
-                    throw new ArgumentException(); // invalid header of packet
-                m_Precedence = (Precedence)((raw[1] & 0xE0) >> 5);
-                m_Delay = (Delay)((raw[1] & 0x10) >> 4);
-                m_Throughput = (Throughput)((raw[1] & 0x8) >> 3);
-                m_Reliability = (Reliability)((raw[1] & 0x4) >> 2);
-                m_TotalLength = raw[2] * 256 + raw[3];
-                if (m_TotalLength != raw.Length)
-                    throw new ArgumentException(); // invalid size of packet
-                m_Identification = raw[4] * 256 + raw[5];
-                m_TimeToLive = raw[8];
-                if (Enum.IsDefined(typeof(Protocol), (int)raw[9]))
-                    m_Protocol = (Protocol)raw[9];
-                else
-                    m_Protocol = Protocol.Other;
-                m_Checksum = new byte[2];
-                m_Checksum[0] = raw[11];
-                m_Checksum[1] = raw[10];
-                m_SourceAddress = new IPAddress(BitConverter.ToUInt32(raw, 12));
-                m_DestinationAddress = new IPAddress(BitConverter.ToUInt32(raw, 16));
-                if (m_Protocol == Protocol.Tcp || m_Protocol == Protocol.Udp)
-                {
-                    m_SourcePort = raw[m_HeaderLength] * 256 + raw[m_HeaderLength + 1];
-                    m_DestinationPort = raw[m_HeaderLength + 2] * 256 + raw[m_HeaderLength + 3];
-                }
-                else
-                {
-                    m_SourcePort = -1;
-                    m_DestinationPort = -1;
-                }
-
-
-                //Gets the URL if it exists
-                IPHostEntry ipHostEntry = null;
-                try
-                {
-                    ipHostEntry = Dns.GetHostEntry(m_SourceAddress);
-                    m_SourceURL = ipHostEntry.HostName;
-                }
-                catch (Exception e)
-                {
-                    //log.Error(e);
-                    m_SourceURL = e.Message;
-                }
-                try
-                {
-                    ipHostEntry = Dns.GetHostEntry(m_DestinationAddress);
-                    m_DestinationURL = ipHostEntry.HostName;
-                }
-                catch (Exception e)
-                {
-                    //log.Error(e);
-                    m_DestinationURL = e.Message;
-                }
-                
-                m_NbofPackets = 1;
-                
-            }
-            catch (Exception e)
-            {
-                log.Error(e);
-                throw e;
-            }
-        }
-
+        #endregion
+        #region variables
         /// <summary>
         /// Gets the raw bytes of the IP packet.
         /// </summary>
@@ -219,7 +238,7 @@ namespace Monitor
         /// Gets the version of the IP protocol used.
         /// </summary>
         /// <value>A 32-bits signed integer.</value>
-        public int Version
+        public string Version
         {
             get
             {
@@ -230,7 +249,7 @@ namespace Monitor
         /// Gets the length of the IP header [in bytes].
         /// </summary>
         /// <value>A 32-bits signed integer.</value>
-        public int HeaderLength
+        public string HeaderLength
         {
             get
             {
@@ -285,18 +304,18 @@ namespace Monitor
         /// Gets the total length of the IP packet.
         /// </summary>
         /// <value>A 32-bits signed integer.</value>
-        public int TotalLength
+        public int LastPacketLenght
         {
             get
             {
-                return m_TotalLength;
+                return m_LastPacketLenght;
             }
         }
         /// <summary>
         /// Gets the identification number of the IP packet.
         /// </summary>
         /// <value>A 32-bits signed integer.</value>
-        public int Identification
+        public string Identification
         {
             get
             {
@@ -307,7 +326,7 @@ namespace Monitor
         /// Gets the time-to-live [hop count] of the IP packet.
         /// </summary>
         /// <value>A 32-bits signed integer.</value>
-        public int TimeToLive
+        public string TimeToLive
         {
             get
             {
@@ -318,7 +337,7 @@ namespace Monitor
         /// Gets the checksum of the IP packet.
         /// </summary>
         /// <value>An array of two bytes.</value>
-        public byte[] Checksum
+        public string Checksum
         {
             get
             {
@@ -392,6 +411,7 @@ namespace Monitor
                     return DestinationAddress.ToString();
             }
         }
+        #endregion
         /// <summary>
         /// Returns a string representation of the Packet 
         /// </summary>

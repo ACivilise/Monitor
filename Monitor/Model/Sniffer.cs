@@ -75,7 +75,7 @@ namespace Monitor
                     {
                         var packet = new byte[received];
                         Array.Copy(m_Buffer, 0, packet, 0, received);
-                        OnNewPacket(new Entry(packet));
+                        OnNewPacket(new Entry(packet, received));
                     }
                 }
                 sniffer.BeginReceive(m_Buffer, 0, m_Buffer.Length, SocketFlags.None, new AsyncCallback(this.OnReceive), null);
@@ -138,7 +138,7 @@ namespace Monitor
             sb.Append(" ");
             sb.Append("Destination : ").Append(p.Destination.ToString());
             sb.Append(" ");
-            sb.Append("TotalLength : ").Append(p.TotalLength.ToString());
+            sb.Append("TotalLength : ").Append(p.LastPacketLenght.ToString());
             sb.Append(" ");
             Console.WriteLine(sb.ToString());
 

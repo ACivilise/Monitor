@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Monitor
 {
-    class IpInfo
+    public class IpInfo
     {
         [JsonProperty("ip")]
         public string Ip { get; set; }
