@@ -1,12 +1,16 @@
 ﻿using log4net;
+using MaxMind.GeoIP2;
+using MaxMind.GeoIP2.Responses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,5 +98,51 @@ namespace Monitor
 
             return ipInfo;
         }
+
+        public static IpInfo GetCytiCountryByIpFromDBB(string ip)
+        {
+            var ipInfo = new IpInfo();
+            try
+            {
+                if (ip.Contains(':'))
+                {
+                    ip = ip.Split(':')[0];
+                }
+                if (File.Exists(@"GeoLite2-City.mmdb"))
+                {
+                    // This creates the DatabaseReader object, which should be reused across
+                    // lookups.
+                    using (var reader = new DatabaseReader(@"GeoLite2-City.mmdb"))
+                    {
+                        // Replace "City" with the appropriate method for your database, e.g.,
+                        // "Country".
+                        var city = reader.City(ip);
+                        if (city != null)
+                        {
+                            ipInfo.Country = city.Country.Name;
+                            ipInfo.City = city.City.Name;
+                            ipInfo.Postal = city.Postal.Code;
+                            ipInfo.Ip = ip;
+                            ipInfo.Region = city.Continent.Name;
+                            ipInfo.Loc = city.Location.Latitude.ToString().Replace(',', '.') + ',' + city.Location.Longitude.ToString().Replace(',', '.');
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e);
+            }
+            return ipInfo;
+        }
+
+
+        
+
+        public static bool IsAdministrator()
+        {
+            return (new WindowsPrincipal(WindowsIdentity.GetCurrent()))
+                    .IsInRole(WindowsBuiltInRole.Administrator);
+        }    
     }
 }

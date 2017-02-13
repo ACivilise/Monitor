@@ -32,17 +32,25 @@ namespace Monitor
         {
             try
             {
-                // BasicConfigurator replaced with XmlConfigurator.
-                XmlConfigurator.Configure(new System.IO.FileInfo("log4net.xml"));
+                if (Tools.IsAdministrator())
+                {
+                    // BasicConfigurator replaced with XmlConfigurator.
+                    XmlConfigurator.Configure(new System.IO.FileInfo("log4net.xml"));
 
-                // Set up a simple configuration that logs on the console.
-                BasicConfigurator.Configure();
+                    // Set up a simple configuration that logs on the console.
+                    BasicConfigurator.Configure();
 
-                InitializeComponent();
+                    InitializeComponent();
 
-                TheEntriesListView.Model.SearchLocationEvent += OnLocalise;
+                    TheEntriesListView.Model.SearchLocationEvent += OnLocalise;
 
-                Closing += (s, e) => ViewModelLocator.Cleanup();
+                    Closing += (s, e) => ViewModelLocator.Cleanup();
+                }
+                else
+                {
+                    MessageBox.Show("You have to have administrator privilege to run this app...");
+                }
+
             }
             catch (Exception e)
             {

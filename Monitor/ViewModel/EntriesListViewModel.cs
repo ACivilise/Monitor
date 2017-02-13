@@ -47,11 +47,23 @@ namespace Monitor.ViewModel
                  
             if (Sniffer.Local_IP.Equals(selectedEntry.SourceAddress))
             {
-                ipInfo = Tools.GetUserCountryByIp(selectedEntry.DestinationAddress.ToString());
+                //Test de localisation avec GeoLite2
+                ipInfo = Tools.GetCytiCountryByIpFromDBB(selectedEntry.DestinationAddress.ToString());
+                if (string.IsNullOrEmpty(ipInfo.Country))
+                {
+                    //Test de localisation avec http://ipinfo.io/
+                    ipInfo = Tools.GetUserCountryByIp(selectedEntry.DestinationAddress.ToString());
+                }                
             }
             else if (Sniffer.Local_IP.Equals(selectedEntry.DestinationAddress))
             {
-                ipInfo = Tools.GetUserCountryByIp(selectedEntry.SourceAddress.ToString());
+                //Test de localisation avec GeoLite2
+                ipInfo = Tools.GetCytiCountryByIpFromDBB(selectedEntry.SourceAddress.ToString());
+                if (string.IsNullOrEmpty(ipInfo.Country))
+                {
+                    //Test de localisation avec http://ipinfo.io/
+                    ipInfo = Tools.GetUserCountryByIp(selectedEntry.SourceAddress.ToString());
+                }          
             }
 
             SearchLocationEvent(ipInfo);
