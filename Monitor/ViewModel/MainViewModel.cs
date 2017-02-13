@@ -31,8 +31,7 @@ namespace Monitor.ViewModel
         /// </summary>
         public MainViewModel()
         {
-        }
-        
+        }       
 
     }
 }

@@ -14,6 +14,7 @@ using GalaSoft.MvvmLight.Command;
 using Monitor.ViewModel;
 using Microsoft.Practices.ServiceLocation;
 using log4net.Config;
+using System.Text;
 
 namespace Monitor
 {
@@ -38,11 +39,38 @@ namespace Monitor
                 BasicConfigurator.Configure();
 
                 InitializeComponent();
+
+                TheEntriesListView.Model.SearchLocationEvent += OnLocalise;
+
                 Closing += (s, e) => ViewModelLocator.Cleanup();
             }
             catch (Exception e)
             {
                 log.Error(e);
+            }
+        }
+
+        private void OnLocalise(IpInfo ipInfo)
+        {
+            try
+            {
+                StringBuilder query = new StringBuilder("https://www.google.com/maps?ll=");
+                query.Append(ipInfo.Loc);
+
+            
+                //StringBuilder query = new StringBuilder("http://maps.google.com/?q=");
+                //query.Append(ipInfo.City).Append("+");
+                //query.Append(ipInfo.Country).Append("+");
+                //query.Append(ipInfo.Region).Append("+");
+                //query.Append(ipInfo.Postal).Append("+");
+                //query.Append(ipInfo.Loc);
+
+                TheWebBrowser.Adress.Text = query.ToString();
+                TheWebBrowser.UpdateAdress();
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
     }    

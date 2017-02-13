@@ -15,6 +15,9 @@ namespace Monitor.ViewModel
 
         public Sniffer Sniffer;
 
+        public event SearchLocationEventHandler SearchLocationEvent;
+        public delegate void SearchLocationEventHandler(IpInfo ipInfo);
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -33,10 +36,7 @@ namespace Monitor.ViewModel
                 InvokePropertyChanged(new PropertyChangedEventArgs("ListOfEntries"));
             }
         }
-
-        private delegate void UpdatePacketList(Entry p);
-
-
+        
         #region Implementation of INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -53,6 +53,8 @@ namespace Monitor.ViewModel
             {
                 ipInfo = Tools.GetUserCountryByIp(selectedEntry.SourceAddress.ToString());
             }
+
+            SearchLocationEvent(ipInfo);
 
             return ipInfo;
 

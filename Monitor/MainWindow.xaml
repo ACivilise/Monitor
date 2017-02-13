@@ -20,14 +20,14 @@
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="Sniffer">
-                                <view:EntriesListView/>
+                                <view:EntriesListView x:Name="TheEntriesListView"/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>
                     <xcad:LayoutDocumentPaneGroup>
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument Title="WebBrowser">
-                                <view:BrowserView/>
+                                <view:BrowserView x:Name="TheWebBrowser"/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup>

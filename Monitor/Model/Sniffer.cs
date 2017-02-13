@@ -14,8 +14,7 @@ namespace Monitor
     public class Sniffer
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Sniffer));
-
-
+        
         /// <summary>
         /// Holds all the listeners for the NewPacket event.
         /// </summary>

@@ -32,9 +32,10 @@ namespace Monitor.View
             InitializeComponent();
             Model = ServiceLocator.Current.GetInstance<BrowserViewModel>();
             Model.UpdateAdress += UpdateAdress;
+            this.DataContext = Model;
         }
 
-        private void UpdateAdress()
+        public void UpdateAdress()
         {
             try
             {
